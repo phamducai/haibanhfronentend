@@ -1,10 +1,9 @@
-
 /**
  * Type definitions for API data based on Haibanh API
  */
 
 //products
-
+export const BASE_URL_LOCAL = "http://localhost:3000/api/v1";
 export interface ProductCourse {
   productid: string;
   productname: string;
@@ -27,7 +26,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   fullname?: string;
-  phone:string
+  phone: string;
 }
 
 export interface GoogleAuthRequest {
@@ -59,15 +58,14 @@ export interface UserProfile {
 }
 
 export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
+  USER = "user",
+  ADMIN = "admin",
 }
 
-
 export enum CourseLevel {
-  BEGINNER = 'beginner',
-  INTERMEDIATE = 'intermediate',
-  ADVANCED = 'advanced',
+  BEGINNER = "beginner",
+  INTERMEDIATE = "intermediate",
+  ADVANCED = "advanced",
 }
 
 export interface ApiError {
@@ -79,18 +77,18 @@ export interface ChapterName {
   chaptername: string;
 }
 export interface Lesson {
- lessonid: string;
- chapterid: string;
- lessonname: string;
- videourl: string;
- duration: string;
- displayorder: number;
- description: string;
- createdat: string;  // ISO 8601 format (e.g., "2025-05-14T16:03:49.541Z")
- updatedat: string;  // ISO 8601 format (e.g., "2025-05-14T16:03:49.541Z")
- isdeleted: boolean;
- productid: string;
- chapters: ChapterName;
+  lessonid: string;
+  chapterid: string;
+  lessonname: string;
+  videourl: string;
+  duration: string;
+  displayorder: number;
+  description: string;
+  createdat: string; // ISO 8601 format (e.g., "2025-05-14T16:03:49.541Z")
+  updatedat: string; // ISO 8601 format (e.g., "2025-05-14T16:03:49.541Z")
+  isdeleted: boolean;
+  productid: string;
+  chapters: ChapterName;
 }
 export interface VideoInput {
   lessonname: string;
