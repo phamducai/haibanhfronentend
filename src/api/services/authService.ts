@@ -2,39 +2,36 @@
  * Authentication Service
  * Handles user authentication operations like login, register, etc.
  */
-import { apiClient } from "../apiClient";
-import { AUTH_ENDPOINTS, BASE_URL_LOCAL } from "../endpoints";
-import type {
-  LoginRequest,
-  RegisterRequest,
+import { apiClient } from '../apiClient';
+import { AUTH_ENDPOINTS } from '../endpoints';
+import type { 
+  LoginRequest, 
+  RegisterRequest, 
   AuthResponse,
   User,
-  GoogleAuthRequest,
-} from "../types";
-import axios from "axios";
+  GoogleAuthRequest
+} from '../types';
 
 export const authService = {
   /**
    * Log in a user
-   * @param data User login credentials
+   * @param credentials User login credentials
    */
-  async login(data: LoginRequest): Promise<any> {
-    return axios.post<AuthResponse>(
-      `${BASE_URL_LOCAL}${AUTH_ENDPOINTS.LOGIN}`,
-      data
-    );
+  async login(credentials: LoginRequest): Promise<AuthResponse> {
+    return apiClient.post<AuthResponse>(AUTH_ENDPOINTS.LOGIN, {
+      data: credentials
+    });
   },
 
   /**
    * Register a new user
-   * @param data User registration data
+   * @param userData User registration data
    */
-  async register(data: RegisterRequest): Promise<any> {
-    console.log(AUTH_ENDPOINTS.REGISTER, data);
-    return axios.post<AuthResponse>(
-      `${BASE_URL_LOCAL}${AUTH_ENDPOINTS.REGISTER}`,
-      data
-    );
+  async register(userData: RegisterRequest): Promise<AuthResponse> {
+    console.log(AUTH_ENDPOINTS.REGISTER,userData)
+    return apiClient.post<AuthResponse>(AUTH_ENDPOINTS.REGISTER, {
+      data: userData
+    });
   },
 
   /**
@@ -51,7 +48,7 @@ export const authService = {
   async googleAuth(googleData: GoogleAuthRequest): Promise<AuthResponse> {
     console.log("Google Auth Data:", googleData);
     return apiClient.post<AuthResponse>(AUTH_ENDPOINTS.GOOGLE_AUTH, {
-      data: googleData,
+      data: googleData
     });
   },
 
@@ -68,5 +65,5 @@ export const authService = {
    */
   async refreshToken(): Promise<{ accessToken: string }> {
     return apiClient.post(AUTH_ENDPOINTS.REFRESH_TOKEN);
-  },
+  }
 };
