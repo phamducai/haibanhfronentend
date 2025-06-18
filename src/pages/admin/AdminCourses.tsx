@@ -28,6 +28,7 @@ const courseSchema = z.object({
   description: z.string(),
   regularprice: z.string(),
   saleprice: z.string(),
+  textfunction: z.string(),
 });
 
 type CourseFormValues = z.infer<typeof courseSchema>;
@@ -67,6 +68,7 @@ const AdminCourses = () => {
       description: '',
       regularprice: '',
       saleprice: '',
+      textfunction: '',
     }
   });
   
@@ -81,6 +83,7 @@ const AdminCourses = () => {
       description: '',
       regularprice: '',
       saleprice: '',
+      textfunction: '',
     });
     setShowCourseDialog(true);
   };
@@ -97,6 +100,7 @@ const AdminCourses = () => {
         description: courseDetail.description || '',
         regularprice: courseDetail.regularprice || '',
         saleprice: courseDetail.saleprice || '',
+        textfunction:courseDetail.textfunction||'',
       });
       
       if (courseDetail.imageurl) {
@@ -131,7 +135,8 @@ const AdminCourses = () => {
           description: data.description,
           regularprice: data.regularprice,
           saleprice: data.saleprice,
-          iscourse: true
+          iscourse: true,
+          textfunction:data.textfunction
         } as ProductCourse);
         
         if (selectedImage) {
@@ -149,7 +154,7 @@ const AdminCourses = () => {
         formData.append('regularprice', data.regularprice);
         formData.append('saleprice', data.saleprice);
         formData.append('iscourse', 'true'); // Phải gửi dạng string theo yêu cầu API
-        
+        formData.append('textfunction',data.textfunction)
         // Thêm hình ảnh vào FormData nếu đã chọn
         if (selectedImage) {
           formData.append('file', selectedImage);
@@ -326,9 +331,25 @@ const AdminCourses = () => {
                     <FormMessage />
                   </FormItem>
                 )}
+              />    
+              <FormField
+                control={form.control}
+                name="textfunction"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Text Function</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Nhập text function" 
+                        className="h-16" 
+                        {...field} 
+                      />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                )}
               />
            
-              
               <div className="border-t pt-4">
                 <FormLabel>Hình ảnh khoá học</FormLabel>
                 <div className="mt-2 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 p-6 rounded-md">

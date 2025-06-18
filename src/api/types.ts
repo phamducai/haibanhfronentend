@@ -16,6 +16,7 @@ export interface ProductCourse {
   downloadurl?: string;
   isactive?: boolean;
   isdeleted?: boolean;
+  textfunction?: string;
 }
 // Auth related types
 export interface LoginRequest {
@@ -97,4 +98,17 @@ export interface VideoInput {
   description?: string;
   chapterid: string;
   displayorder: number;
+}
+
+// Contact related types
+export interface ContactRequest {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+}
+
+export interface ContactResponse {
+  success: boolean;
+  message: string;
 }

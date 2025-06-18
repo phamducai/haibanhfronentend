@@ -30,6 +30,7 @@ const courseSchema = z.object({
   regularprice: z.string(),
   saleprice: z.string(),
   downloadurl: z.string(),
+  textfunction: z.string(),
 });
 
 type CourseFormValues = z.infer<typeof courseSchema>;
@@ -70,6 +71,7 @@ const AdminTemplates = () => {
       regularprice: '',
       saleprice: '',
       downloadurl:'',
+      textfunction:'',
     }
   });
   
@@ -85,6 +87,7 @@ const AdminTemplates = () => {
       regularprice: '',
       saleprice: '',
       downloadurl:'',
+      textfunction:'',
     });
     setShowCourseDialog(true);
   };
@@ -101,7 +104,8 @@ const AdminTemplates = () => {
         description: courseDetail.description || '',
         regularprice: courseDetail.regularprice || '',
         saleprice: courseDetail.saleprice || '',
-        downloadurl:courseDetail.downloadurl||''
+        downloadurl:courseDetail.downloadurl||'',
+        textfunction:courseDetail.textfunction||'',
       });
       
       if (courseDetail.imageurl) {
@@ -134,6 +138,7 @@ const AdminTemplates = () => {
           saleprice: data.saleprice,
           iscourse: false,
           downloadurl:data.downloadurl,
+          textfunction:data.textfunction
         } as ProductCourse);
         
         if (selectedImage) {
@@ -152,6 +157,7 @@ const AdminTemplates = () => {
         formData.append('saleprice', data.saleprice);
         formData.append('iscourse', 'false'); // Phải gửi dạng string theo yêu cầu API
         formData.append('downloadurl',data.downloadurl)
+        formData.append('textfunction',data.textfunction)
         // Thêm hình ảnh vào FormData nếu đã chọn
         if (selectedImage) {
           formData.append('file', selectedImage);
@@ -322,7 +328,25 @@ const AdminTemplates = () => {
                   </FormItem>
                 )}
               />
-           
+              
+             <FormField
+                control={form.control}
+                name="textfunction"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Text Function</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Nhập text function" 
+                        className="h-16" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          
            <FormField
                 control={form.control}
                 name="downloadurl"

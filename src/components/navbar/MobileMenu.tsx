@@ -24,8 +24,8 @@ const MobileMenu = ({ isAuthenticated, onLogout }: MobileMenuProps) => {
   const navItems = [
     { path: '/', label: 'Trang chủ', icon: 'home' },
     { path: '/blog', label: 'Blog', icon: 'file-text' },
-    { path: '/san-pham', label: 'Sản phẩm', icon: 'shopping-bag' },
-    { path: '/khoa-hoc', label: 'Khoá học', icon: 'book-open' },
+    // { path: '/san-pham', label: 'Sản phẩm', icon: 'shopping-bag' },
+    { path: '/khoa-hoc', label: 'Sản Phẩm', icon: 'book-open' },
     { path: '/cau-chuyen', label: 'Câu chuyện', icon: 'bookmark' },
     { path: '/lien-he', label: 'Liên hệ', icon: 'mail' },
   ];

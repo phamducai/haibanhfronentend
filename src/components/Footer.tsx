@@ -22,8 +22,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link to="/" className="text-gray-600 hover:text-primary">Trang chủ</Link></li>
               <li><Link to="/blog" className="text-gray-600 hover:text-primary">Blog</Link></li>
-              <li><Link to="/san-pham" className="text-gray-600 hover:text-primary">Sản phẩm</Link></li>
-              <li><Link to="/khoa-hoc" className="text-gray-600 hover:text-primary">Khoá học</Link></li>
+              <li><Link to="/khoa-hoc" className="text-gray-600 hover:text-primary">Sản Phẩm</Link></li>
               <li><Link to="/cau-chuyen" className="text-gray-600 hover:text-primary">Câu chuyện</Link></li>
             </ul>
           </div>

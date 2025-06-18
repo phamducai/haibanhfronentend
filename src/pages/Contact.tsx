@@ -1,8 +1,62 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/sonner';
+import { contactService } from '@/api/services';
+import type { ContactRequest } from '@/api/types';
 
 const Contact = () => {
+  
+  const [formData, setFormData] = useState<ContactRequest>({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      // Validate form data before sending
+      const validation = contactService.validateContactData(formData);
+      if (!validation.isValid) {
+        validation.errors.forEach(error => {
+          toast.error(error);
+        });
+        return;
+      }
+
+      console.log('Sending contact form data:', formData);
+      
+      // Send data to backend using contact service
+      const response = await contactService.sendMessage(formData);
+      
+      if (response.success) {
+        toast.success('Tin nhắn đã được gửi thành công!');
+        setFormData({ name: '', email: '', phone: '', message: '' });
+      } else {
+        toast.error(response.message || 'Có lỗi xảy ra khi gửi tin nhắn');
+      }
+      
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại!');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <div className="bg-muted py-16">
@@ -21,14 +75,17 @@ const Contact = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div>
               <h2 className="text-2xl font-bold mb-6">Gửi tin nhắn cho chúng tôi</h2>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label className="block text-gray-700 mb-2" htmlFor="name">
-                    Họ và tên
+                    Họ và tên <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   />
@@ -36,41 +93,55 @@ const Contact = () => {
                 
                 <div>
                   <label className="block text-gray-700 mb-2" htmlFor="email">
-                    Email
+                    Email <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-gray-700 mb-2" htmlFor="subject">
-                    Chủ đề
+                  <label className="block text-gray-700 mb-2" htmlFor="phone">
+                    Số Điện Thoại <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="text"
-                    id="subject"
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
                   />
                 </div>
                 
                 <div>
                   <label className="block text-gray-700 mb-2" htmlFor="message">
-                    Tin nhắn
+                    Tin nhắn <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
                     rows={5}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   ></textarea>
                 </div>
                 
-                <Button className="bg-primary hover:bg-primary/90 w-full py-2">
-                  Gửi tin nhắn
+                <Button 
+                  type="submit"
+                  className="bg-primary hover:bg-primary/90 w-full py-2"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Đang gửi...' : 'Gửi tin nhắn'}
                 </Button>
               </form>
             </div>

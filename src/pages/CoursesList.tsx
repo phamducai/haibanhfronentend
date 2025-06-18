@@ -6,20 +6,31 @@ import { Search, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { CourseCardProps } from '../components/CourseCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { GetUserProductService, userProductService } from '@/api/services/userProductService';
+import { courseService, ProductCourse } from '@/api';
+import { useAuth } from '@/context/AuthContext';
 
 const CoursesList = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const { isAuthenticated } = useAuth();
+
   // Sử dụng TanStack Query để lấy dữ liệu khóa học/template
-  const { 
-    data: coursesData, 
-    isLoading, 
-    isError
-  } = useQuery<GetUserProductService[]>({
-    queryKey: ['products', 'product', searchQuery],
-    queryFn: () => userProductService.getUserProductsByUserId(true),
+  const {
+    data: coursesData,
+      isLoading,
+      isError
+  } = useQuery<ProductCourse[]>({
+    queryKey: ['products', searchQuery, isAuthenticated],
+    queryFn: async () => {
+      // Nếu đã đăng nhập, sử dụng API getUserbyProduct
+      if (isAuthenticated) {
+        const response = await courseService.getUserbyProduct();
+        return response || [];
+      } else {
+        // Nếu chưa đăng nhập, sử dụng API getCoursesAsProducts
+        return courseService.getCoursesAsProducts(searchQuery || undefined);
+      }
+    },
     staleTime: 1000 * 60 * 5, // 5 phút
     refetchOnWindowFocus: true,
   });
@@ -33,14 +44,14 @@ const CoursesList = () => {
   // Chuyển đổi ProductCourse[] thành CourseCardProps[]
   const transformedCourses: CourseCardProps[] = coursesData?.map(course => ({
     id: course.productid,
-    title: course.products.productname,
-    description: course.products.description || 'Mô tả đang được cập nhật',
-    image: course.products.imageurl || 'https://placehold.co/600x400?text=N8N',
-    price: course.products.saleprice,
-    regularPrice: course.products.regularprice,
-    type: course.products.iscourse ? 'Khóa học' : 'Template',
-    buttonType: course.products.iscourse ? 1 : 2,
-    downloadurl:course.products?.downloadurl
+    title: course.productname,
+    description: course.description || 'Mô tả đang được cập nhật',
+    image: course.imageurl || 'https://placehold.co/600x400?text=N8N',
+    price: course.saleprice,
+    regularPrice: course.regularprice,
+    type: course.iscourse ? 'Khóa học' : 'Template',
+    buttonType: course.iscourse ? 1 : 2,
+    downloadurl:course?.downloadurl
   })) || [];
   
   // Lọc dữ liệu theo filter

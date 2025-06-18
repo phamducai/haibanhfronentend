@@ -40,3 +40,8 @@ export const COURSE_ENDPOINTS = {
   COUNT: () => `${PRODUCTS_BASE_URL}/stats/count`,
   PRODUCT_USER: () => `${PRODUCTS_BASE_URL}/userid/home`,
 };
+
+// Contact endpoints
+export const CONTACT_ENDPOINTS = {
+  SEND_MESSAGE: '/contact/send',
+};

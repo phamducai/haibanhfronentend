@@ -51,7 +51,7 @@ const Navbar = () => {
   const navItems = [
     { path: '/', label: 'Trang chủ' },
     { path: '/blog', label: 'Blog' },
-    { path: '/khoa-hoc', label: 'Khoá học' },
+    { path: '/khoa-hoc', label: 'Sản Phẩm' },
     { path: '/cau-chuyen', label: 'Câu chuyện' },
     { path: '/lien-he', label: 'Liên hệ' },
   ];
