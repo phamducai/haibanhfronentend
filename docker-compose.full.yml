@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:17
+    container_name: course_platform_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: course_platform
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  backend:
+    # Assuming backend is in ../backend directory
+    build:
+      context: ../backend
+      dockerfile: dockerfile
+    container_name: course_platform_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgres://admin:admin@postgres:5432/course_platform
+      - NODE_ENV=production
+      - JWT_SECRET=helloword
+      - JWT_EXPIRES_IN=1d
+      - JWT_REFRESH_EXPIRES_IN=7d
+      - EMAIL_USER=haismartlife@gmail.com
+      - EMAIL_PASSWORD=vjeg uksb xusq avhj
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: course_platform_frontend
+    restart: always
+    environment:
+      - NODE_ENV=production
+    ports:
+      - '5173:5173'
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
