@@ -93,7 +93,7 @@ const ProductDetail = () => {
     setImageError(false);
     setImageLoading(true);
   }, [product?.productid]);
-
+    
   // Check if user has purchased this product
   useEffect(() => {
     const checkPurchaseStatus = async () => {
@@ -132,7 +132,7 @@ const ProductDetail = () => {
       navigate('/dang-nhap');
       return;
     }
-
+    
     try {
       const cartItems = await userProductService.getUserProductsByUserId(false);
       const existingItem = cartItems.find(item => item.productid === courseId);
@@ -146,13 +146,13 @@ const ProductDetail = () => {
           status: false
         });
         toast.success("Đã thêm vào giỏ hàng");
-        window.dispatchEvent(new Event('cart-updated'));
+    window.dispatchEvent(new Event('cart-updated'));
       }
     } catch (error) {
       toast.error("Có lỗi xảy ra khi thêm vào giỏ hàng");
     }
   };
-
+  
   const handleDownload = () => {
     if (!product?.downloadurl) {
       toast.error("Không tìm thấy URL tải xuống");
@@ -336,7 +336,7 @@ const ProductDetail = () => {
       </div>
     );
   }
-
+  
   return (
     <>
       <Helmet>
@@ -345,7 +345,7 @@ const ProductDetail = () => {
       </Helmet>
 
       <div className="min-h-screen py-8 bg-gray-50">
-        <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Main content */}
             <div className="lg:col-span-2">
@@ -388,17 +388,17 @@ const ProductDetail = () => {
                     </div>
                   </div>
                 ) : (
-                  <img 
+            <img 
                     src={getImageUrl(product?.imageurl)} 
                     alt={product?.productname || 'Product Image'}
                     className="w-full h-64 lg:h-80 object-cover"
                     onLoad={handleImageLoad}
                     onError={handleImageError}
                     style={{ display: imageLoading ? 'none' : 'block' }}
-                  />
+            />
                 )}
-              </div>
-
+          </div>
+          
               {/* Product info */}
               <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
                 <div className="flex items-center gap-3 mb-4">
@@ -414,19 +414,19 @@ const ProductDetail = () => {
                       <span className="flex items-center gap-1 text-sm text-gray-600">
                         <Clock className="w-4 h-4" />
                         {Math.round(totalDuration)} phút
-                      </span>
+              </span>
                     </>
                   )}
-                </div>
-
+            </div>
+            
                 <h1 className="text-3xl font-bold text-gray-900 mb-4">
                   {product.productname}
                 </h1>
-
+            
                 <p className="text-gray-600 text-lg leading-relaxed mb-6">
                   {product.description || 'Mô tả sản phẩm đang được cập nhật...'}
-                </p>
-
+            </p>
+            
                 {/* Features */}
                 <div className="bg-gray-50 rounded-lg p-6">
                   <h3 className="font-semibold text-lg mb-4">
@@ -478,7 +478,7 @@ const ProductDetail = () => {
                             </div>
                             <span className="text-sm text-gray-500">
                               {chapter.lessons.length} bài học
-                            </span>
+                </span>
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-4 pb-4">
@@ -500,7 +500,7 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
-
+            
             {/* Sidebar - Purchase card */}
             <div className="lg:col-span-1">
               <Card className="sticky top-8 shadow-lg">
@@ -532,7 +532,7 @@ const ProductDetail = () => {
                   </div>
 
                   <div className="space-y-3">
-                    {isPurchased ? (
+              {isPurchased ? (
                       <>
                         <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
                           <Check className="w-5 h-5 text-green-600" />
@@ -540,14 +540,14 @@ const ProductDetail = () => {
                         </div>
                         
                         {isTemplate ? (
-                          <Button 
-                            onClick={handleDownload}
-                            className="w-full"
+                <Button 
+                  onClick={handleDownload}
+                  className="w-full"
                             size="lg"
-                          >
+                >
                             <Download className="mr-2 h-4 w-4" />
                             Tải xuống Template
-                          </Button>
+                </Button>
                         ) : (
                           <Button 
                             onClick={handleStartLearning}
@@ -559,8 +559,8 @@ const ProductDetail = () => {
                           </Button>
                         )}
                       </>
-                    ) : (
-                      <>
+              ) : (
+                <>
                         <Button 
                           onClick={handleBuyNow}
                           className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
@@ -569,19 +569,19 @@ const ProductDetail = () => {
                           Mua ngay
                         </Button>
                         
-                        <Button 
-                          onClick={handleAddToCart}
-                          variant="outline"
+                  <Button 
+                    onClick={handleAddToCart}
+                    variant="outline" 
                           className="w-full"
                           size="lg"
-                        >
+                  >
                           <ShoppingCart className="mr-2 h-4 w-4" />
                           Thêm vào giỏ hàng
-                        </Button>
-                      </>
-                    )}
-                  </div>
-
+                  </Button>
+                </>
+              )}
+            </div>
+            
                   <Separator className="my-6" />
 
                   <div className="space-y-4 text-sm">

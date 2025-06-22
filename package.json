@@ -8,7 +8,13 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop haismartlife-frontend",
+    "pm2:restart": "pm2 restart haismartlife-frontend",
+    "pm2:delete": "pm2 delete haismartlife-frontend",
+    "pm2:logs": "pm2 logs haismartlife-frontend",
+    "pm2:monit": "pm2 monit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
