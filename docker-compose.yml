@@ -11,8 +11,8 @@ services:
     ports:
       - '5173:5173'
     networks:
-      - app-network
+      - backendhaibanhh_app-network
 
 networks:
-  app-network:
-    driver: bridge 
+  backendhaibanhh_app-network:
+    external: true 
