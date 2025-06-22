@@ -36,7 +36,7 @@ pm2 delete haismartlife-frontend 2>/dev/null || true
 
 # Khởi động với PM2
 echo "Khởi động với PM2..."
-pm2 start ecosystem.config.js
+pm2 start ecosystem.config.mjs
 
 # Lưu PM2 config
 pm2 save

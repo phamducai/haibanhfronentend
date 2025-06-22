@@ -1,10 +1,11 @@
-module.exports = {
+// PM2 Configuration with ES Modules syntax
+export default {
   apps: [
     {
       name: 'haismartlife-frontend',
       script: 'npm',
       args: 'run preview',
-      cwd: './',
+      cwd: process.cwd(),
       instances: 1,
       autorestart: true,
       watch: false,
