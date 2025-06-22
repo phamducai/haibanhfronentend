@@ -48,8 +48,8 @@ const CourseCard = ({ id, title, description, image, price, regularPrice, type, 
   const handleStudyNow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate(`/khoa-hoc/${id}`)
-    // Chuyển hướng đến trang chi tiết khóa học
+    navigate(`/khoa-hoc/${id}/hoc`)
+    // Chuyển hướng đến trang học khóa học
   };
 
   // Hàm xử lý khi nhấn nút "Tải xuống"

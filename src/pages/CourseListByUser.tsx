@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import ProductGrid from '../components/ProductGrid';
 import { Input } from '@/components/ui/input';
@@ -6,31 +7,34 @@ import { Search, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { CourseCardProps } from '../components/CourseCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { courseService, ProductCourse } from '@/api';
+import { GetUserProductService, userProductService } from '@/api';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from '@/components/ui/sonner';
+import { Helmet } from 'react-helmet-async';
 
-const CoursesList = () => {
+const CourseListByUser = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  // Kiểm tra authentication - redirect về trang đăng nhập nếu chưa đăng nhập
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      toast.info("Vui lòng đăng nhập để xem sản phẩm đã mua");
+      navigate('/dang-nhap');
+    }
+  }, [isAuthenticated, authLoading, navigate]);
 
   // Sử dụng TanStack Query để lấy dữ liệu khóa học/template
   const {
     data: coursesData,
-      isLoading,
-      isError
-  } = useQuery<ProductCourse[]>({
-    queryKey: ['products', isAuthenticated],
-    queryFn: async () => {
-      // Nếu đã đăng nhập, sử dụng API getUserbyProduct
-      if (isAuthenticated) {
-        const response = await courseService.getUserbyProduct();
-        return response || [];
-      } else {
-        // Nếu chưa đăng nhập, sử dụng API getCoursesAsProducts (lấy tất cả, search frontend)
-        return courseService.getCoursesAsProducts();
-      }
-    },
+    isLoading,
+    isError
+  } = useQuery<GetUserProductService[]>({
+    queryKey: ['user-products', 'purchased'],
+    queryFn: () => userProductService.getUserProductsByUserId(true),
+    enabled: isAuthenticated, // Chỉ fetch khi đã đăng nhập
     staleTime: 1000 * 60 * 5, // 5 phút
     refetchOnWindowFocus: true,
   });
@@ -44,14 +48,14 @@ const CoursesList = () => {
   // Chuyển đổi ProductCourse[] thành CourseCardProps[]
   const transformedCourses: CourseCardProps[] = coursesData?.map(course => ({
     id: course.productid,
-    title: course.productname,
-    description: course.description || 'Mô tả đang được cập nhật',
-    image: course.imageurl || 'https://placehold.co/600x400?text=N8N',
-    price: course.saleprice,
-    regularPrice: course.regularprice,
-    type: course.iscourse ? 'Khóa học' : 'Template',
-    buttonType: course.iscourse ? 1 : 2,
-    downloadurl:course?.downloadurl
+    title: course.products.productname,
+    description: course.products.description || 'Mô tả đang được cập nhật',
+    image: course.products.imageurl || 'https://placehold.co/600x400?text=N8N',
+    price: course.products.saleprice,
+    regularPrice: course.products.regularprice,
+    type: course.products.iscourse ? 'Khóa học' : 'Template',
+    buttonType: course.products.iscourse ? 1 : 2,
+    downloadurl:course?.products.downloadurl
   })) || [];
   
   // Lọc dữ liệu theo filter và search
@@ -76,21 +80,43 @@ const CoursesList = () => {
     return matchesCategory && matchesSearch;
   });
 
+  // Không render gì nếu đang check auth hoặc chưa đăng nhập
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span>Đang kiểm tra đăng nhập...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Component sẽ redirect trước khi render
+  }
+
   return (
-    <div className="min-h-screen py-12 animate-fade-in">
-      <div className="container mx-auto px-4">
+    <>
+      <Helmet>
+        <title>Sản phẩm đã mua | Haismartlife</title>
+        <meta name="description" content="Xem danh sách các khóa học và template bạn đã mua tại Haismartlife" />
+      </Helmet>
+
+      <div className="min-h-screen py-12 animate-fade-in">
+        <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold mb-4">Khóa học & Template</h1>
+          <h1 className="text-4xl font-bold mb-4">Sản phẩm đã mua</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Khám phá các khóa học và template n8n để tự động hóa quy trình làm việc 
-            và tăng hiệu suất với AI và automation
+            Quản lý và truy cập các khóa học và template n8n bạn đã mua. 
+            Bắt đầu học ngay hoặc tải xuống template để sử dụng.
           </p>
           
           <div className="mt-8 max-w-xl mx-auto">
             <div className="relative">
               <Input
                 type="text"
-                placeholder="Tìm kiếm khóa học và template..."
+                placeholder="Tìm kiếm trong sản phẩm đã mua..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
@@ -209,7 +235,7 @@ const CoursesList = () => {
                   <p className="text-gray-500 mb-4">
                     {searchQuery.trim() 
                       ? `Không có sản phẩm nào phù hợp với từ khóa "${searchQuery}"`
-                      : 'Hiện tại chưa có sản phẩm nào trong danh mục này.'
+                      : 'Bạn chưa mua sản phẩm nào. Hãy khám phá các khóa học và template của chúng tôi!'
                     }
                   </p>
                   {searchQuery.trim() ? (
@@ -219,7 +245,13 @@ const CoursesList = () => {
                     >
                       Xóa bộ lọc
                     </Button>
-                  ) : null}
+                  ) : (
+                    <Button 
+                      onClick={() => navigate('/khoa-hoc')}
+                    >
+                      Khám phá sản phẩm
+                    </Button>
+                  )}
                 </div>
               </div>
             ) : (
@@ -229,10 +261,10 @@ const CoursesList = () => {
                   searchQuery.trim()
                     ? `${filteredCourses.length} sản phẩm được tìm thấy`
                     : activeFilter === 'all' 
-                      ? `Tất cả khóa học và template (${filteredCourses.length})` 
+                      ? `Tất cả sản phẩm đã mua (${filteredCourses.length})` 
                       : activeFilter === 'course' 
-                        ? `Danh sách khóa học (${filteredCourses.length})`
-                        : `Danh sách template (${filteredCourses.length})`
+                        ? `Khóa học đã mua (${filteredCourses.length})`
+                        : `Template đã mua (${filteredCourses.length})`
                 }
               />
             )}
@@ -240,7 +272,8 @@ const CoursesList = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
-export default CoursesList;
+export default CourseListByUser;

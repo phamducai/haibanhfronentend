@@ -19,6 +19,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import CoursesList from "./pages/CoursesList";
 import CourseDetail from "./pages/CourseDetail";
+import ProductDetail from "./pages/ProductDetail";
 import Story from "./pages/Story";
 import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
@@ -28,6 +29,7 @@ import UserDashboard from "./pages/UserDashboard";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Products from "./pages/Products";
+import CourseListByUser from "./pages/CourseListByUser";
 
 // Admin Pages (lazy loaded)
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -128,13 +130,14 @@ const App = () => {
                           <Route path="/blog" element={<Blog />} />
                           <Route path="/blog/:postId" element={<BlogPost />} />
                           <Route path="/khoa-hoc" element={<CoursesList />} />
-                          <Route path="/khoa-hoc/:courseId" element={<CourseDetail />} />
+                          <Route path="/khoa-hoc/:courseId" element={<ProductDetail />} />
+                          <Route path="/khoa-hoc/:courseId/hoc" element={<CourseDetail />} />
                           <Route path="/cau-chuyen" element={<Story />} />
                           <Route path="/lien-he" element={<Contact />} />
                           <Route path="/thanh-toan" element={<Checkout />} />
                           <Route path="/tim-kiem" element={<SearchResults />} />
                           <Route path="/tai-khoan" element={<UserDashboard />} />
-                          <Route path="/san-pham-da-mua" element={<CoursesList />} />
+                          <Route path="/san-pham-da-mua" element={<CourseListByUser />} />
                           <Route path="*" element={<NotFound />} />
                         </Routes>
                       </main>
