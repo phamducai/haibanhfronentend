@@ -3,9 +3,9 @@ export default {
   apps: [
     {
       name: 'haismartlife-frontend',
-      script: 'npm',
-      args: 'run preview',
-      cwd: process.cwd(),
+      script: './node_modules/.bin/vite',
+      args: 'preview --host 0.0.0.0 --port 5173',
+      cwd: './',
       instances: 1,
       autorestart: true,
       watch: false,
