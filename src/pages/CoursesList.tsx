@@ -27,8 +27,8 @@ const CoursesList = () => {
         const response = await courseService.getUserbyProduct();
         return response || [];
       } else {
-        // Nếu chưa đăng nhập, sử dụng API getCoursesAsProducts (lấy tất cả, search frontend)
-        return courseService.getCoursesAsProducts();
+        // Nếu chưa đăng nhập, sử dụng API getCoursesAsProducts
+        return courseService.getCoursesAsProducts(searchQuery || undefined);
       }
     },
     staleTime: 1000 * 60 * 5, // 5 phút
@@ -50,7 +50,7 @@ const CoursesList = () => {
     price: course.saleprice,
     regularPrice: course.regularprice,
     type: course.iscourse ? 'Khóa học' : 'Template',
-    buttonType: course.iscourse ? 1 : 2,
+    buttonType: 3,
     downloadurl:course?.downloadurl
   })) || [];
   
