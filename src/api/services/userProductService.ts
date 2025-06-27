@@ -53,6 +53,18 @@ export const userProductService = {
     }
   },
 
+  async getUserProductsByUserIdNotLogin(status?: boolean): Promise<GetUserProductService[]> {    
+    try {
+      const response = await apiClient.get<GetUserProductService[]>(`/userproducts/userid/notlogin`, {
+        params: { status }
+      });
+      return response;
+    } catch (error) {
+      console.error('Error getting user products:', error);
+      return [];
+    }
+  },
+
   async deleteUsersProducts(id:string): Promise<boolean> {  
     try {
        await apiClient.delete<CreateUserProductService>(`/userproducts/${id}`);     
@@ -72,5 +84,9 @@ export const userProductService = {
     } catch (error) {
       return false;
     }
+  },
+
+  async getTotalAmountAdmin(): Promise<number> {
+    return apiClient.get<number>(`/userproducts/totalamount/admin`);
   }
 }

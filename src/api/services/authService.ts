@@ -2,15 +2,15 @@
  * Authentication Service
  * Handles user authentication operations like login, register, etc.
  */
-import { apiClient } from '../apiClient';
-import { AUTH_ENDPOINTS } from '../endpoints';
-import type { 
-  LoginRequest, 
-  RegisterRequest, 
+import { apiClient } from "../apiClient";
+import { AUTH_ENDPOINTS } from "../endpoints";
+import type {
+  LoginRequest,
+  RegisterRequest,
   AuthResponse,
   User,
-  GoogleAuthRequest
-} from '../types';
+  GoogleAuthRequest,
+} from "../types";
 
 export const authService = {
   /**
@@ -19,7 +19,7 @@ export const authService = {
    */
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     return apiClient.post<AuthResponse>(AUTH_ENDPOINTS.LOGIN, {
-      data: credentials
+      data: credentials,
     });
   },
 
@@ -28,9 +28,9 @@ export const authService = {
    * @param userData User registration data
    */
   async register(userData: RegisterRequest): Promise<AuthResponse> {
-    console.log(AUTH_ENDPOINTS.REGISTER,userData)
+    console.log(AUTH_ENDPOINTS.REGISTER, userData);
     return apiClient.post<AuthResponse>(AUTH_ENDPOINTS.REGISTER, {
-      data: userData
+      data: userData,
     });
   },
 
@@ -46,9 +46,8 @@ export const authService = {
    * @param googleData Google authentication data
    */
   async googleAuth(googleData: GoogleAuthRequest): Promise<AuthResponse> {
-    console.log("Google Auth Data:", googleData);
     return apiClient.post<AuthResponse>(AUTH_ENDPOINTS.GOOGLE_AUTH, {
-      data: googleData
+      data: googleData,
     });
   },
 
@@ -65,5 +64,22 @@ export const authService = {
    */
   async refreshToken(): Promise<{ accessToken: string }> {
     return apiClient.post(AUTH_ENDPOINTS.REFRESH_TOKEN);
+  },
+
+
+  async checkEmail(email: string): Promise<boolean> {
+    return apiClient.post<boolean>(`/users/byemail`, {
+      data: { email }
+    });
+  },
+
+  async checkPhone(phone: string): Promise<boolean> {
+    return apiClient.post<boolean>(`/users/byphone`, {
+      data: { phone }
+    });
+  },
+
+  async getCountUsers(): Promise<number> {
+    return apiClient.get<number>(`/users/count`);
   }
 };

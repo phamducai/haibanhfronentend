@@ -69,13 +69,6 @@ const Checkout = () => {
               if (Math.abs(data.amount - totalPrice) <= 500) {
                 setPaymentFound(true);  
                 handlePaymentSuccess(data.amount);
-                for(const item of cartItems){
-                  userProductService.updateUsersProducts(item.userproductid,{
-                    transactionid:orderCode,
-                    status:true
-                  })
-                }
-
               } else {
                 toast.error("Số tiền thanh toán không đúng", {
                   description: `Số tiền yêu cầu: ${formatPrice(totalPrice)}, số tiền nhận được: ${formatPrice(data.amount)}`,
@@ -95,14 +88,14 @@ const Checkout = () => {
                     .catch(error => {
                       console.error('Lỗi kiểm tra thanh toán:', error);
                     });
-                }, 15000);
+                }, 150);
               }
             }
           })
           .catch(error => {
             console.error('Lỗi kiểm tra thanh toán:', error);
           });
-      }, 10000); 
+      }, 100); 
     }
     return () => {
       if (checkIntervalRef.current) {
@@ -119,16 +112,38 @@ const Checkout = () => {
 
   
   // Hàm xử lý khi tìm thấy thanh toán thành công
-  const handlePaymentSuccess = (amount: number) => {
-    toast.success("Thanh toán thành công!", {
-      description: `Cảm ơn bạn đã mua hàng. Chúng tôi đã nhận được ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)}`,
-    });
-    
-    // Clear cart
-    window.dispatchEvent(new Event('cart-updated'));
-    setTimeout(() => {
-      navigate('/san-pham-da-mua');
-    }, 3000);
+  const handlePaymentSuccess = async (amount: number) => {
+    try {
+      toast.success("Thanh toán thành công!", {
+        description: `Cảm ơn bạn đã mua hàng. Chúng tôi đã nhận được ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)}`,
+      });
+      
+      // Update all cart items status first
+      const updatePromises = cartItems.map(item => 
+        userProductService.updateUsersProducts(item.userproductid, {
+          transactionid: orderCode,
+          status: true
+        })
+      );
+      
+      // Wait for all updates to complete
+      await Promise.all(updatePromises);
+      
+      // Clear cart locally first
+      setCartItems([]);
+      
+      // Dispatch custom event with clear cart instruction
+      window.dispatchEvent(new CustomEvent('cart-updated', { 
+        detail: { action: 'clear' } 
+      }));
+      
+      setTimeout(() => {
+        navigate('/san-pham-da-mua');
+      }, 3000);
+    } catch (error) {
+      console.error('Error updating cart items:', error);
+      toast.error('Có lỗi xảy ra khi cập nhật đơn hàng');
+    }
   };
   
   // Dọn dẹp interval khi component unmount
@@ -200,7 +215,7 @@ const Checkout = () => {
                           <h3 className="font-semibold mb-4">Quét mã QR để thanh toán</h3>
                           <div className="bg-white p-4 border-2 border-gray-200 rounded-lg inline-block">
                             <img 
-                              src={`https://qr.sepay.vn/img?acc=29165397&bank=ACB&amount=${totalPrice}&des=${orderCode}`}
+                              src={`https://qr.sepay.vn/img?acc=0769478010&bank=MB&amount=${totalPrice}&des=${orderCode}`}
                               alt="QR Code thanh toán"
                               className="w-48 h-48"
                             />
@@ -216,15 +231,15 @@ const Checkout = () => {
                           <div className="bg-gray-50 p-4 rounded-lg space-y-3">
                             <div>
                               <span className="font-medium">Ngân hàng:</span>
-                              <span className="ml-2">ACB</span>
+                              <span className="ml-2">MB</span>
                             </div>
                             <div>
                               <span className="font-medium">Số tài khoản:</span>
-                              <span className="ml-2 font-mono">29165397</span>
+                              <span className="ml-2 font-mono">0769478010</span>
                             </div>
                             <div>
                               <span className="font-medium">Chủ tài khoản:</span>
-                              <span className="ml-2">PHAM DUC AI</span>
+                              <span className="ml-2">NGUYEN QUOC HAI</span>
                             </div>
                             <div>
                               <span className="font-medium">Số tiền:</span>

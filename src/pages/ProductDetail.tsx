@@ -423,9 +423,17 @@ const ProductDetail = () => {
                   {product.productname}
                 </h1>
             
-                <p className="text-gray-600 text-lg leading-relaxed mb-6">
-                  {product.description || 'Mô tả sản phẩm đang được cập nhật...'}
-            </p>
+                <div className="text-gray-600 text-lg leading-relaxed mb-6">
+                  {product.description ? (
+                    product.description.split(';').map((line, index) => (
+                      <p key={index} className="mb-2">
+                        {line.trim()}
+                      </p>
+                    ))
+                  ) : (
+                    <p>Mô tả sản phẩm đang được cập nhật...</p>
+                  )}
+            </div>
             
                 {/* Features */}
                 <div className="bg-gray-50 rounded-lg p-6">

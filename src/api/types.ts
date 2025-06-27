@@ -35,6 +35,7 @@ export interface GoogleAuthRequest {
   email: string;
   googleId?: string;
   avatarUrl?: string;
+  fullname?: string;
 }
 
 export interface AuthResponse {

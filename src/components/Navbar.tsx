@@ -15,10 +15,22 @@ import { GetUserProductService, userProductService } from '@/api/services/userPr
 const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<GetUserProductService[]>([]);
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, isLoading } = useAuth();
   const navigate=useNavigate();
+
+  // Helper function to check if user is truly authenticated
+  const isUserAuthenticated = () => {
+    const token = localStorage.getItem('accessToken');
+    return isAuthenticated && !isLoading && token;
+  };
   useEffect(() => {
     const loadCartItems = async () => {
+      // Only load cart items if user is truly authenticated
+      if (!isUserAuthenticated()) {
+        setCartItems([]);
+        return;
+      }
+      
       try {
         const savedCartItems = await userProductService.getUserProductsByUserId(false)
         if (savedCartItems) {
@@ -30,20 +42,38 @@ const Navbar = () => {
       }
     };
 
-    // Load initial cart items
-    loadCartItems();
-
     // Set up event listener for cart updates
-    window.addEventListener('cart-updated', loadCartItems);
+    const handleCartUpdate = (event: Event) => {
+      // Check if it's a custom event with clear action
+      if (event instanceof CustomEvent && event.detail?.action === 'clear') {
+        setCartItems([]);
+        return;
+      }
+      
+      // Otherwise, reload cart items if authenticated
+      if (isUserAuthenticated()) {
+        loadCartItems();
+      } else {
+        setCartItems([]);
+      }
+    };
+
+    window.addEventListener('cart-updated', handleCartUpdate);
+
+    // Load initial cart items only if not loading
+    if (!isLoading) {
+      loadCartItems();
+    }
 
     // Clean up event listener
     return () => {
-      window.removeEventListener('cart-updated', loadCartItems);
+      window.removeEventListener('cart-updated', handleCartUpdate);
     };
-  }, []);
+  }, [isAuthenticated, isLoading]); // Add both isAuthenticated and isLoading as dependencies
 
   const handleLogout = () => {
     logout();
+    setCartItems([]); // Clear cart items when logout
     toast.info("Đã đăng xuất");
   };
 

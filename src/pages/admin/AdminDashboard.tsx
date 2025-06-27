@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpen, Package, Users, DollarSign } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { courseService } from '@/api/services/courseService';
+import { userProductService } from '@/api';
+import { authService } from '@/api/services/authService';
 
 // Loading card component for statistics
 const StatCardSkeleton = () => (
@@ -29,8 +31,8 @@ const AdminDashboard = () => {
   }>({
     totalCourses: 0,
     totalTemplates: 0,
-    totalUsers: 250, // Mock value
-    totalRevenue: 12500000, // Mock value in VND
+    totalUsers:0, // Mock value
+    totalRevenue: 0 // Mock value in VND
   });
 
   const [loading, setLoading] = useState(true);
@@ -40,9 +42,11 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
       try {
         // Using Promise.all to fetch courses and templates counts in parallel
-        const [coursesResponse, templatesResponse] = await Promise.all([
+        const [coursesResponse, templatesResponse, usersResponse, totalAmountResponse] = await Promise.all([
           courseService.getCountCoursesAsProducts(true), // Courses (isCourse = true)
           courseService.getCountCoursesAsProducts(false), // Templates (isCourse = false)
+          authService.getCountUsers(),
+          userProductService.getTotalAmountAdmin(),
         ]);
          
         console.log(coursesResponse,templatesResponse,"templatesResponse")
@@ -50,6 +54,8 @@ const AdminDashboard = () => {
           ...prevStats,
           totalCourses: coursesResponse,
           totalTemplates: templatesResponse,
+          totalUsers: usersResponse,
+          totalRevenue: totalAmountResponse,
         }));
       } catch (err) {
         console.error('Error fetching dashboard stats:', err);

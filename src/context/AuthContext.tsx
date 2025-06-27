@@ -87,11 +87,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithGoogle = async (googleUserData: GoogleAuthResponse): Promise<boolean> => {
     setIsLoading(true);
     try {
+      console.log(googleUserData);
       // Prepare data for API
       const googleAuthData: GoogleAuthRequest = {
         email: googleUserData.email,
         googleId: googleUserData.id,
-        avatarUrl: googleUserData.picture
+        avatarUrl: googleUserData.picture,
+        fullname: googleUserData.name,
       };
       
       // Call API
@@ -124,6 +126,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (email: string, password: string, fullname: string,phone:string): Promise<boolean> => {
     setIsLoading(true);
     try {
+      const checkEmail = await authService.checkEmail(email);
+      if (checkEmail) {
+        toast.error('Tài khoản đã tồn tại');
+        return false;
+      }
+      const checkPhone = await authService.checkPhone(phone);
+      if (checkPhone) {
+        toast.error('Số điện thoại đã tồn tại');
+        return false;
+      }
       // Prepare data for API
       const registerData: RegisterRequest = {
         email,
