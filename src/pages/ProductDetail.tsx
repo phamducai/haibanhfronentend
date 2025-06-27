@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { courseService } from '@/api/services/courseService';
 import { chapterService } from '@/api/services/chapterService';
@@ -32,9 +32,24 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 const ProductDetail = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Lấy imageUrl từ navigate state nếu có
+  const stateImageUrl = location.state?.imageUrl;
+  
+  // Tạo full URL cho hình ảnh
+  const getImageUrl = (imageUrl: string) => {
+    if (!imageUrl) return 'https://placehold.co/600x400?text=N8N';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return `http://haismartai.com/${imageUrl}`;
+  };
+  
+  // Debug: kiểm tra state
+  console.log('Location state:', location.state);
+  console.log('State Image URL:', stateImageUrl);
+  console.log('Full Image URL:', getImageUrl(stateImageUrl || ''));
   const { isAuthenticated } = useAuth();
   const [isPurchased, setIsPurchased] = useState(false);
-  const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -90,7 +105,6 @@ const ProductDetail = () => {
 
   // Reset image states when product changes
   useEffect(() => {
-    setImageError(false);
     setImageLoading(true);
   }, [product?.productid]);
     
@@ -263,27 +277,9 @@ const ProductDetail = () => {
   // Image handling functions
   const handleImageLoad = () => {
     setImageLoading(false);
-    setImageError(false);
   };
 
-  const handleImageError = () => {
-    setImageLoading(false);
-    setImageError(true);
-  };
 
-  // Format image URL
-  const getImageUrl = (url: string | undefined) => {
-    if (!url?.trim()) {
-      return 'https://placehold.co/800x400?text=Product+Image';
-    }
-    
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    
-    const path = url.startsWith('/') ? url : `/${url}`;
-        return `http://localhost:3000${path}`;
-  };
 
   // Simple calculations - không cần memoization phức tạp
   const groupedLessons = chapters.map(chapter => ({
@@ -351,52 +347,16 @@ const ProductDetail = () => {
             <div className="lg:col-span-2">
               {/* Product image */}
               <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8 relative">
-                {imageLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-                      <span className="text-sm text-gray-500">Đang tải ảnh...</span>
-                    </div>
-                  </div>
-                )}
+              
                 
-                                {imageError ? (
-                  <div className="w-full h-64 lg:h-80 bg-gray-100 flex flex-col items-center justify-center">
-                    <div className="text-center p-8">
-                      <div className="text-gray-400 mb-3">
-                        <svg className="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <p className="text-gray-500 text-sm mb-3">Không thể tải ảnh</p>
-                      <button 
-                        onClick={() => {
-                          setImageError(false);
-                          setImageLoading(true);
-                          // Force reload ảnh
-                          const img = document.querySelector(`img[alt="${product?.productname}"]`) as HTMLImageElement;
-                          if (img) {
-                            const currentSrc = img.src;
-                            img.src = '';
-                            img.src = currentSrc + '?t=' + Date.now();
-                          }
-                        }}
-                        className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                      >
-                        Thử lại
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-            <img 
-                    src={getImageUrl(product?.imageurl)} 
-                    alt={product?.productname || 'Product Image'}
-                    className="w-full h-64 lg:h-80 object-cover"
-                    onLoad={handleImageLoad}
-                    onError={handleImageError}
-                    style={{ display: imageLoading ? 'none' : 'block' }}
-            />
-                )}
+                <img 
+                  src={getImageUrl(stateImageUrl || '')} 
+                  alt={product?.productname || 'Product Image'}
+                  className="w-full h-64 lg:h-80 object-cover"
+                  onLoad={handleImageLoad}
+                  style={{ display: imageLoading ? 'none' : 'block' }}
+                  crossOrigin="anonymous"
+                />
           </div>
           
               {/* Product info */}

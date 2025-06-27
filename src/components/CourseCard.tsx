@@ -190,7 +190,7 @@ const CourseCard = ({ id, title, description, image, price, regularPrice, type, 
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-lg">
-      <Link to={`/khoa-hoc/${id}`}>
+      <Link to={`/khoa-hoc/${id}`} state={{ imageUrl: image, productData: { id, title, description, image, price, regularPrice, type } }}>
         <div className="relative">
           <img 
             src={image} 
@@ -270,7 +270,7 @@ const CourseCard = ({ id, title, description, image, price, regularPrice, type, 
       
       <CardFooter className="flex justify-between pt-0 pb-4">
         <Button asChild variant="outline" className="text-gray-700 flex-1 mr-2">
-          <Link to={`/khoa-hoc/${id}`}>Chi tiết</Link>
+          <Link to={`/khoa-hoc/${id}`} state={{ imageUrl: image, productData: { id, title, description, image, price, regularPrice, type } }}>Chi tiết</Link>
         </Button>
         <Button 
           className="bg-gradient-to-r to-orange-500 hover:from-red-700 hover:to-orange-600 text-white font-bold flex-1 shadow-md transition-all duration-300 hover:shadow-lg" 
